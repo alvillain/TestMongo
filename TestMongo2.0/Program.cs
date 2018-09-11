@@ -11,6 +11,8 @@ namespace TestMongo2._0
     {
         static void Main(string[] args)
         {
+            Console.WriteLine("Started app");
+
             var builder = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
@@ -24,11 +26,13 @@ namespace TestMongo2._0
             
             while (true)
             {
+                Console.WriteLine($"Trying to find _id={appConfig.FilteredObjectId} in {appConfig.CollectionName}");
+
                 var filter = Builders<BsonDocument>.Filter.Eq("_id", new ObjectId(appConfig.FilteredObjectId));
 
                 var res =  collection.Find(filter);
                
-                Console.WriteLine($"Read {res.ToList().Count} and wait {appConfig.WaitIntervalSeconds} seconds...");
+                Console.WriteLine($"Found {res.ToList().Count} record. Wait {appConfig.WaitIntervalSeconds} seconds...");
 
                 WaitHandle.WaitAny(new[] { tokenSource.Token.WaitHandle }, TimeSpan.FromSeconds(appConfig.WaitIntervalSeconds));
             }
